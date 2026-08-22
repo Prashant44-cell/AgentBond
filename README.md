@@ -161,6 +161,4 @@ Visit **`http://localhost:5173`** to access the complete AgentBond platform.
 
 ## 📜 7. License
 Distributed under the **MIT License**. Built on **Algorand** using the **x402 Protocol**.
-#   A g e n t B o n d  
- #   A g e n t B o n d  
- 
+#
