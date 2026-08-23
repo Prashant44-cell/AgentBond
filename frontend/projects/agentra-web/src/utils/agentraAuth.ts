@@ -50,8 +50,8 @@ export interface VerificationReceipt {
   evidence?: string[]
 }
 
-const SESSION_STORAGE_KEY = 'agentbond_session_token'
-const SESSION_WALLET_KEY = 'agentbond_session_wallet'
+const SESSION_STORAGE_KEY = 'agentra_session_token'
+const SESSION_WALLET_KEY = 'agentra_session_wallet'
 
 export function getStoredSessionToken(): string | null {
   return localStorage.getItem(SESSION_STORAGE_KEY)

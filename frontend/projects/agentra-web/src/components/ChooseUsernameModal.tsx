@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { claimUsername, validateUsernameInput, AuthUserProfile } from '../utils/auth'
+import { claimUsername, validateUsernameInput, AuthUserProfile } from '../utils/agentraAuth'
 import { useTheme } from '../ThemeContext'
 
 interface ChooseUsernameModalProps {

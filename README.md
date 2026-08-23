@@ -164,11 +164,11 @@ sequenceDiagram
 ## Project structure
 
 ```text
-AgentBond/
+X402 (exception)/
 ├── README.md                         # Project guide
 ├── ARCHITECTURE.md                   # Extended protocol architecture
-├── AgentBond logo.png                # Brand asset
-├── server/                           # Backend package
+├── AgentBond logo.png                # Selected brand asset
+├── agentra-server/                   # Backend package; legacy directory name
 │   ├── index.ts                       # Hono app, routes, CORS, x402 middleware
 │   ├── package.json                   # Backend scripts and dependencies
 │   ├── endpoints.config.ts            # x402 pricing/configuration
@@ -180,16 +180,18 @@ AgentBond/
 │   ├── handlers/p2p-marketplace.ts    # Requests, offers, Bonds, funding, chat
 │   ├── handlers/agent-credit.ts       # Scoring, obligations, outcome verification
 │   └── test-*.ts                      # Security, P2P, signing, E2E checks
-└── frontend/projects/web/
+└── agentra-frontend/projects/agentra-web/
     ├── package.json                   # React/Vite scripts
-    ├── index.html                     # Browser metadata and branding
+    ├── index.html                     # Browser metadata and PNG branding
     ├── public/agentbond-logo.png      # Runtime logo and favicon
     └── src/
         ├── main.tsx / App.tsx         # React bootstrap and app shell
-        ├── DashboardHome.tsx          # Dashboard navigation
+        ├── AgentraHome.tsx             # Dashboard navigation
         ├── components/                # Profile, Bureau, P2P, Pools, Transactions
         └── utils/                     # Wallet auth, credit API, x402, network helpers
 ```
+
+The `agentra-*` paths are legacy repository names. The product and user-facing identity are **AgentBond**.
 
 ## Local setup
 
@@ -204,7 +206,7 @@ AgentBond/
 ### Backend
 
 ```bash
-cd server
+cd agentra-server
 npm install
 ```
 
@@ -234,7 +236,7 @@ curl http://localhost:4021/api/credit/bureau
 ### Frontend
 
 ```bash
-cd frontend/projects/web
+cd agentra-frontend/projects/agentra-web
 npm install
 ```
 
@@ -257,7 +259,7 @@ Open `http://localhost:5173` and connect a TestNet wallet.
 ### Backend
 
 ```bash
-cd server
+cd agentra-server
 npx tsc --noEmit
 npm test
 npm run test:security
@@ -269,7 +271,7 @@ npm run test:e2e
 ### Frontend
 
 ```bash
-cd frontend/projects/web
+cd agentra-frontend/projects/agentra-web
 npx tsc --noEmit
 npm test
 npm run playwright:test
@@ -281,7 +283,7 @@ If the Playwright browser is not installed, run `npx playwright install chromium
 
 ```bash
 # Terminal 1
-cd server
+cd agentra-server
 npm install
 copy .env.example .env
 # Set DATABASE_URL
@@ -290,7 +292,7 @@ npm run db:migrate
 npm start
 
 # Terminal 2
-cd frontend/projects/web
+cd agentra-frontend/projects/agentra-web
 npm install
 npm run dev
 ```

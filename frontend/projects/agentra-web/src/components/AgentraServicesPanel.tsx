@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAgentBondServices, AgentBondCatalogResponse } from '../utils/api'
+import { fetchAgentBondServices, AgentBondCatalogResponse } from '../utils/agentraApi'
 
 export const AgentBondServicesPanel: React.FC = () => {
   const [catalog, setCatalog] = useState<AgentBondCatalogResponse | null>(null)
