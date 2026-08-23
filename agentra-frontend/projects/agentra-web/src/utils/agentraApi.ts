@@ -1,5 +1,5 @@
 /**
- * Agentra API Client & x402 Payment Wrapper for Algorand TestNet
+ * AgentBond API Client & x402 Payment Wrapper for Algorand TestNet
  */
 
 import { x402Client, wrapFetchWithPayment } from '@x402-avm/fetch'
@@ -32,10 +32,10 @@ export interface VerifyTaskResponse {
   details?: string
 }
 
-export type AgentraVerificationReport = VerifyTaskResponse
+export type AgentBondVerificationReport = VerifyTaskResponse
 
 
-export interface AgentraServiceItem {
+export interface AgentBondServiceItem {
   name: string
   endpoint: string
   method: string
@@ -60,18 +60,18 @@ export interface AgentraServiceItem {
   }
 }
 
-export interface AgentraCatalogResponse {
-  services: AgentraServiceItem[]
+export interface AgentBondCatalogResponse {
+  services: AgentBondServiceItem[]
 }
 
 /**
  * Creates an x402-enabled fetch wrapper backed by the connected Algorand wallet
  */
-export async function createAgentraX402Fetch(walletSigner: {
+export async function createAgentBondX402Fetch(walletSigner: {
   address: string
   signTransactions: (txns: Uint8Array[]) => Promise<(Uint8Array | string | null | undefined)[]>
 }) {
-  console.log('🛡️ [Agentra] Initializing x402 Client for address:', walletSigner.address)
+  console.log('🛡️ [AgentBond] Initializing x402 Client for address:', walletSigner.address)
   const client = new x402Client()
 
   let originalTxns: Uint8Array[] = []
@@ -80,7 +80,7 @@ export async function createAgentraX402Fetch(walletSigner: {
     address: walletSigner.address,
     signTransactions: async (txns: Uint8Array[]) => {
       try {
-        console.log(`[Agentra] x402Signer: received ${txns.length} payment transaction(s) to sign`)
+        console.log(`[AgentBond] x402Signer: received ${txns.length} payment transaction(s) to sign`)
         originalTxns = txns
 
         const walletResult = await walletSigner.signTransactions(txns)
@@ -107,7 +107,7 @@ export async function createAgentraX402Fetch(walletSigner: {
 
         return walletResult
       } catch (error) {
-        console.error('[Agentra] signTransactions error:', error)
+        console.error('[AgentBond] signTransactions error:', error)
         throw error
       }
     },
@@ -128,7 +128,7 @@ export async function verifyAgentTask(
   payload: VerifyTaskRequest,
   apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
 ): Promise<VerifyTaskResponse> {
-  const fetchWithPayment = await createAgentraX402Fetch(walletSigner)
+  const fetchWithPayment = await createAgentBondX402Fetch(walletSigner)
 
   const response = await fetchWithPayment(`${apiBaseUrl}/verify-task`, {
     method: 'POST',
@@ -230,7 +230,7 @@ export function evaluateTaskLocally(payload: VerifyTaskRequest): VerifyTaskRespo
 
   return {
     success: true,
-    service: 'agentra.verify',
+    service: 'agentbond.verify',
     decision,
     risk,
     confidence,
@@ -246,12 +246,12 @@ export function evaluateTaskLocally(payload: VerifyTaskRequest): VerifyTaskRespo
 /**
  * Fetch free public service discovery catalog
  */
-export async function fetchAgentraServices(
+export async function fetchAgentBondServices(
   apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
-): Promise<AgentraCatalogResponse> {
+): Promise<AgentBondCatalogResponse> {
   const res = await fetch(`${apiBaseUrl}/services`)
   if (!res.ok) {
-    throw new Error(`Failed to fetch Agentra services (HTTP ${res.status})`)
+    throw new Error(`Failed to fetch AgentBond services (HTTP ${res.status})`)
   }
   return res.json()
 }

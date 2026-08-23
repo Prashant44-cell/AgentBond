@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext } from 'react'
 
 export type ThemeMode = 'dark' | 'light' | 'system'
 
@@ -8,8 +8,9 @@ interface ThemeContextValue {
 }
 
 export const ThemeContext = createContext<ThemeContextValue>({
-  themeMode: 'dark',
-  isLight: false,
+  themeMode: 'light',
+  isLight: true,
 })
 
 export const useTheme = () => useContext(ThemeContext)
+

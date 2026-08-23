@@ -1,10 +1,10 @@
-# Agentra Core Verification Server
+# AgentBond Core Verification Server
 
 > Autonomous AI Agent Pre-Action Verification & Intelligence Backend with x402 Micropayment Enforcement on Algorand TestNet.
 
 ## Overview
 
-**Agentra Core Server** is a high-throughput Hono/TypeScript backend engine that protects autonomous AI agent operations against high-risk irreversible actions (fraudulent invoices, phishing emails, malicious contracts, prompt injection attacks, and data leaks) via decentralized micro-metered payments.
+**AgentBond Core Server** is a high-throughput Hono/TypeScript backend engine that protects autonomous AI agent operations against high-risk irreversible actions (fraudulent invoices, phishing emails, malicious contracts, prompt injection attacks, and data leaks) via decentralized micro-metered payments.
 
 ---
 

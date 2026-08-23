@@ -1,7 +1,7 @@
 /**
  * X402 Hackathon Starter Kit - Endpoints Configuration
  * 
- * Agentra: Pay-per-use verification suite for autonomous AI agents.
+ * AgentBond: Pay-per-use verification suite for autonomous AI agents.
  */
 
 import { ALGORAND_TESTNET_CAIP2, USDC_TESTNET_ASA_ID } from '@x402/avm';
@@ -23,14 +23,14 @@ export interface EndpointConfig {
 }
 
 /**
- * Endpoints payment configuration for Agentra
+ * Endpoints payment configuration for AgentBond
  */
 export function createPaymentConfig(avmAddress: string): EndpointConfig {
   const defaultUsdcAsset = Number(USDC_TESTNET_ASA_ID);
 
   return {
     /**
-     * 1. AGENTRA PRIMARY: POST /verify-task (Invoice & General Risk)
+     * 1. AGENTBOND PRIMARY: POST /verify-task (Invoice & General Risk)
      * Price: $0.01 USDC
      */
     'POST /verify-task': {
@@ -43,7 +43,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra AI Agent Verification - Pay $0.01 USDC',
+      description: 'AgentBond AI Agent Verification - Pay $0.01 USDC',
       extensions: declareDiscoveryExtension({
         bodyType: 'json',
         input: {
@@ -53,7 +53,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
         output: {
           example: {
             success: true,
-            service: 'agentra.verify',
+            service: 'agentbond.verify',
             decision: 'suspicious',
             risk: 'high',
             confidence: 0.91,
@@ -79,7 +79,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra Email Phishing & Spoofing Analysis - Pay $0.01 USDC',
+      description: 'AgentBond Email Phishing & Spoofing Analysis - Pay $0.01 USDC',
     },
 
     /**
@@ -96,7 +96,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra Product & Seller Trust Verification - Pay $0.01 USDC',
+      description: 'AgentBond Product & Seller Trust Verification - Pay $0.01 USDC',
     },
 
     /**
@@ -113,7 +113,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra Policy & Cancellation Lock-in Check - Pay $0.01 USDC',
+      description: 'AgentBond Policy & Cancellation Lock-in Check - Pay $0.01 USDC',
     },
 
     /**
@@ -130,7 +130,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra OCR Document & Invoice Parsing - Pay $0.01 USDC',
+      description: 'AgentBond OCR Document & Invoice Parsing - Pay $0.01 USDC',
     },
 
     /**
@@ -147,7 +147,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra Subagent Prompt Injection Filter - Pay $0.01 USDC',
+      description: 'AgentBond Subagent Prompt Injection Filter - Pay $0.01 USDC',
     },
 
     /**
@@ -164,7 +164,7 @@ export function createPaymentConfig(avmAddress: string): EndpointConfig {
           extra: { asset: defaultUsdcAsset },
         },
       ],
-      description: 'Agentra PII & GDPR Privacy Leak Validator - Pay $0.01 USDC',
+      description: 'AgentBond PII & GDPR Privacy Leak Validator - Pay $0.01 USDC',
     },
 
     /**

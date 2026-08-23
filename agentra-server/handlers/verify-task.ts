@@ -1,5 +1,5 @@
 /**
- * Agentra Verify - Paid Task & Content Verification Handler
+ * AgentBond Verify - Paid Task & Content Verification Handler
  * 
  * Endpoint: POST /verify-task
  * Price: $0.01 USDC (via x402 payment middleware)
@@ -61,7 +61,7 @@ interface VerificationResult {
 export async function handleVerifyTaskRequest(c: Context) {
   const startTime = Date.now();
   try {
-    console.log('\n🛡️ [Agentra] x402 Payment Verified — Executing POST /verify-task');
+    console.log('\n🛡️ [AgentBond] x402 Payment Verified — Executing POST /verify-task');
 
     // Parse request body
     let body: Partial<VerifyTaskRequestBody>;
@@ -161,7 +161,7 @@ export async function handleVerifyTaskRequest(c: Context) {
 
     const responsePayload: VerifyTaskResponse = {
       success: true,
-      service: 'agentra.verify',
+      service: 'agentbond.verify',
       decision: result.decision,
       risk: result.risk,
       confidence: result.confidence,

@@ -138,6 +138,8 @@ export async function drawCredit(payload: {
   targetService: string;
   endpoint: string;
   amountUsdc: string;
+  providerWallet: string;
+  paymentTransactionId: string;
   clientReceivableUsdc?: string;
   taskContext?: string;
 }): Promise<{
@@ -161,6 +163,17 @@ export async function drawCredit(payload: {
     throw new Error(errorData.error || 'Credit draw rejected by underwriting engine');
   }
   return res.json();
+}
+
+export async function payProviderWithTestnetWallet(sender: string, receiver: string, amountUsdc: string, signTransactions: (txns: Uint8Array[]) => Promise<any>): Promise<string> {
+  if (!algosdk.isValidAddress(sender) || !algosdk.isValidAddress(receiver)) throw new Error('Enter valid Algorand wallet addresses.')
+  const algod = new algosdk.Algodv2('', 'https://testnet-api.algonode.cloud', '')
+  const suggestedParams = await algod.getTransactionParams().do()
+  const txn = algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({ sender, receiver, amount: Math.round(Number(amountUsdc) * 1_000_000), assetIndex: Number(import.meta.env.VITE_USDC_TESTNET_ASSET_ID || 10458941), suggestedParams })
+  const signed = await signTransactions([txn.toByte()])
+  const signedTxn = Array.isArray(signed) ? signed[0] : signed
+  if (!signedTxn) throw new Error('Wallet did not sign the TestNet payment.')
+  return (await algod.sendRawTransaction(signedTxn).do()).txid
 }
 
 export async function verifyOutcome(payload: {
@@ -231,3 +244,4 @@ export async function fetchPoolStats(): Promise<{ success: boolean; pool: Liquid
   if (!res.ok) throw new Error('Failed to fetch liquidity pool stats');
   return res.json();
 }
+import algosdk from 'algosdk'

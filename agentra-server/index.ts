@@ -52,9 +52,11 @@ import { handleMemeGenerateRequest, handleMemeStylesRequest } from './handlers/m
 import {
   handleGetNonce,
   handleLogin,
+  handleSetUsername,
   handleGetUserProfile,
   handleGetUserAnalytics,
   handleLogout,
+  securityAuditLogsDb,
 } from './handlers/auth';
 
 import {
@@ -73,6 +75,12 @@ import {
   handleRepayLoan,
   handleSendChatMessage,
   handleGetChatHistory,
+  handleBorrowerSignContract,
+  handleLenderSignContract,
+  handleFundLoan,
+  handleRepayContractLoan,
+  handleGetContractDetails,
+  handleGetContractsList,
 } from './handlers/p2p-marketplace';
 
 // Import endpoint configuration
@@ -164,9 +172,11 @@ app.get('/api/credit/pool', handleGetPoolStats);
 
 app.post('/auth/nonce', handleGetNonce);
 app.post('/auth/login', handleLogin);
+app.post('/auth/username', handleSetUsername);
 app.get('/user/profile', handleGetUserProfile);
 app.get('/user/analytics', handleGetUserAnalytics);
 app.post('/auth/logout', handleLogout);
+app.get('/security/audit-logs', (c) => c.json({ success: true, logs: securityAuditLogsDb }));
 
 // Agent Request Portal Endpoints
 app.post('/api/agent-requests', handleCreateAgentRequest);
@@ -184,6 +194,17 @@ app.post('/api/v2/p2p/contracts/sign', handleSignContract);
 app.post('/api/v2/p2p/repay', handleRepayLoan);
 app.post('/api/v2/p2p/chat/message', handleSendChatMessage);
 app.get('/api/v2/p2p/chat/:threadId', handleGetChatHistory);
+
+// Spec-compliant routes (Section 11)
+app.post('/p2p/credit-requests', handleCreateCreditRequest);
+app.get('/p2p/credit-requests', handleGetCreditRequests);
+app.post('/p2p/contracts/:id/borrower-sign', handleBorrowerSignContract);
+app.post('/p2p/contracts/:id/lender-sign', handleLenderSignContract);
+app.post('/p2p/contracts/:id/fund', handleFundLoan);
+app.post('/p2p/contracts/:id/repay', handleRepayContractLoan);
+app.get('/p2p/contracts/:id', handleGetContractDetails);
+app.get('/p2p/contracts', handleGetContractsList);
+app.post('/user/username', handleSetUsername);
 
 // Discovery and diagnostics
 app.get('/services', handleServicesDiscovery);
@@ -249,15 +270,18 @@ app.notFound((c) => {
   );
 });
 
-serve({ fetch: app.fetch, port }, () => {
-  console.log('\n🚀 AgentBond Credit Protocol Server is live!\n');
-  console.log('═'.repeat(65));
-  console.log(`  API Base:            http://localhost:${port}`);
-  console.log(`  Agent Credit Bureau: GET  http://localhost:${port}/api/credit/bureau`);
-  console.log(`  Credit Draw Gateway: POST http://localhost:${port}/api/credit/draw`);
-  console.log(`  Outcome Verifier:    POST http://localhost:${port}/api/credit/verify-outcome`);
-  console.log(`  Debt Settlement:     POST http://localhost:${port}/api/credit/repay`);
-  console.log(`  Liquidity Pool:      GET  http://localhost:${port}/api/credit/pool`);
-  console.log(`  x402 Verification:   POST http://localhost:${port}/verify-*`);
-  console.log('═'.repeat(65));
-});
+const isTestRun = process.argv[1] && process.argv[1].includes('test');
+if (!isTestRun) {
+  serve({ fetch: app.fetch, port }, () => {
+    console.log('\n🚀 AgentBond Credit Protocol Server is live!\n');
+    console.log('═'.repeat(65));
+    console.log(`  API Base:            http://localhost:${port}`);
+    console.log(`  Agent Credit Bureau: GET  http://localhost:${port}/api/credit/bureau`);
+    console.log(`  Credit Draw Gateway: POST http://localhost:${port}/api/credit/draw`);
+    console.log(`  Outcome Verifier:    POST http://localhost:${port}/api/credit/verify-outcome`);
+    console.log(`  Debt Settlement:     POST http://localhost:${port}/api/credit/repay`);
+    console.log(`  Liquidity Pool:      GET  http://localhost:${port}/api/credit/pool`);
+    console.log(`  x402 Verification:   POST http://localhost:${port}/verify-*`);
+    console.log('═'.repeat(65));
+  });
+}

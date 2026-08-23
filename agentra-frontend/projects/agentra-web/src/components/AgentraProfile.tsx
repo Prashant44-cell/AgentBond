@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 
-interface AgentraProfileProps {
+interface AgentBondProfileProps {
   activeAddress: string | null
   walletSigner?: any
   onOpenWalletModal: () => void
   onNavigateOverview?: () => void
 }
 
-export const AgentraProfile: React.FC<AgentraProfileProps> = ({
+export const AgentBondProfile: React.FC<AgentBondProfileProps> = ({
   activeAddress,
   onOpenWalletModal,
   onNavigateOverview,
@@ -43,12 +43,16 @@ export const AgentraProfile: React.FC<AgentraProfileProps> = ({
           className="flex items-center space-x-2 cursor-pointer select-none group"
           onClick={onNavigateOverview}
         >
-          <span className="text-indigo-600 text-lg group-hover:rotate-45 transition-transform">✦</span>
+          <img
+            src="/agentbond-logo.png"
+            alt="AgentBond Logo"
+            className="w-8 h-8 rounded-xl object-contain shadow-md group-hover:scale-105 transition-transform"
+          />
           <span className="text-xl font-semibold tracking-tight text-slate-900 font-['Space_Grotesk',sans-serif]">
-            Nexora
+            AgentBond
           </span>
           <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-600 border border-indigo-200 px-1.5 py-0.5 rounded-full ml-1">
-            Agentra Core
+            M2M Credit
           </span>
         </div>
 
@@ -145,10 +149,12 @@ export const AgentraProfile: React.FC<AgentraProfileProps> = ({
             {/* Top Bar */}
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50/70">
               <div className="flex items-center space-x-2">
-                <div className="w-5 h-5 rounded-md bg-indigo-600 text-white flex items-center justify-center font-bold text-[10px]">
-                  N
-                </div>
-                <span className="font-semibold text-slate-800 text-xs">Nexora</span>
+                <img
+                  src="/agentbond-logo.png"
+                  alt="AgentBond"
+                  className="w-5 h-5 rounded-md object-contain"
+                />
+                <span className="font-semibold text-slate-800 text-xs">AgentBond</span>
                 <svg className="w-3 h-3 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
@@ -475,4 +481,4 @@ export const AgentraProfile: React.FC<AgentraProfileProps> = ({
   )
 }
 
-export default AgentraProfile
+export default AgentBondProfile

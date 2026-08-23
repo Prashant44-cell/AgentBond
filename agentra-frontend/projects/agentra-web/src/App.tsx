@@ -1,6 +1,6 @@
 import { SupportedWallet, WalletId, WalletManager, WalletProvider } from '@txnlab/use-wallet-react'
 import { SnackbarProvider } from 'notistack'
-import AgentraHome from './AgentraHome'
+import AgentBondHome from './AgentraHome'
 import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from './utils/network/getAlgoClientConfigs'
 
 let supportedWallets: SupportedWallet[]
@@ -48,9 +48,9 @@ export default function App() {
   return (
     <SnackbarProvider maxSnack={3}>
       <WalletProvider manager={walletManager}>
-        <div className="min-h-screen bg-slate-950 text-slate-100 font-['Inter',sans-serif]">
-          {/* Main Unified Agentra Application (Single Floating Glassmorphic Navigation) */}
-          <AgentraHome />
+        <div className="min-h-screen bg-[#F5F5F5] text-[#1B133C] font-['Inter',sans-serif]">
+          {/* Main Unified AgentBond Application (Single Floating Glassmorphic Navigation) */}
+          <AgentBondHome />
         </div>
       </WalletProvider>
     </SnackbarProvider>

@@ -11,6 +11,9 @@
  */
 
 import { Context } from 'hono';
+import { getAuthenticatedUserAsync } from './auth';
+import { db, requireDatabaseUrl } from '../db';
+import { verifyConfirmedUsdcTransfer } from '../services/algorand-settlement';
 
 export interface AgentCreditProfile {
   agentId: string;
@@ -128,161 +131,7 @@ let POOL_STATS: LiquidityPoolStats = {
   },
 };
 
-function seedInitialAgents() {
-  const seedList: AgentCreditProfile[] = [
-    {
-      agentId: 'agent_research_01',
-      name: 'ResearchAgent-Alpha',
-      category: 'research',
-      walletAddress: 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA',
-      sponsorAddress: 'SPONSOR777777777777777777777777777777777777777777777777777777',
-      sponsorStakeUsdc: 50.0,
-      runtimeVersion: 'LangChain-v0.2.4',
-      createdAt: '2025-11-10T10:00:00Z',
-      creditScore: 742,
-      riskTier: 'AA',
-      totalCreditLineUsdc: 100.0,
-      availableCreditUsdc: 85.0,
-      maxPerTaskDrawUsdc: 15.0,
-      interestRateBps: 30, // 0.3%
-      defaultProbability: 0.02,
-      metrics: {
-        totalDrawsCount: 428,
-        totalBorrowedUsdc: 3420.0,
-        totalRepaidUsdc: 3405.0,
-        repaymentReliabilityRate: 0.995,
-        verifiedTaskQualityScore: 0.94,
-        identityContinuityMonths: 9,
-        policyComplianceRate: 0.99,
-        serviceDiversityCount: 8,
-        activeObligationsCount: 1,
-      },
-      activeObligations: [],
-    },
-    {
-      agentId: 'agent_coder_02',
-      name: 'CoderBot-Prime',
-      category: 'coding',
-      walletAddress: 'CODER999999999999999999999999999999999999999999999999999999',
-      sponsorAddress: 'DEVLABS88888888888888888888888888888888888888888888888888888',
-      sponsorStakeUsdc: 100.0,
-      runtimeVersion: 'AutoGPT-v4.1',
-      createdAt: '2025-12-01T08:30:00Z',
-      creditScore: 810,
-      riskTier: 'AAA',
-      totalCreditLineUsdc: 250.0,
-      availableCreditUsdc: 250.0,
-      maxPerTaskDrawUsdc: 50.0,
-      interestRateBps: 20, // 0.2%
-      defaultProbability: 0.005,
-      metrics: {
-        totalDrawsCount: 1250,
-        totalBorrowedUsdc: 18450.0,
-        totalRepaidUsdc: 18450.0,
-        repaymentReliabilityRate: 1.0,
-        verifiedTaskQualityScore: 0.98,
-        identityContinuityMonths: 8,
-        policyComplianceRate: 1.0,
-        serviceDiversityCount: 12,
-        activeObligationsCount: 0,
-      },
-      activeObligations: [],
-    },
-    {
-      agentId: 'agent_data_03',
-      name: 'DataScraper-Sentry',
-      category: 'data',
-      walletAddress: 'DATABOT33333333333333333333333333333333333333333333333333333',
-      sponsorAddress: 'NEXUSCAP4444444444444444444444444444444444444444444444444444',
-      sponsorStakeUsdc: 25.0,
-      runtimeVersion: 'CrewAI-v0.5',
-      createdAt: '2026-02-15T14:00:00Z',
-      creditScore: 655,
-      riskTier: 'A',
-      totalCreditLineUsdc: 50.0,
-      availableCreditUsdc: 40.0,
-      maxPerTaskDrawUsdc: 10.0,
-      interestRateBps: 50, // 0.5%
-      defaultProbability: 0.05,
-      metrics: {
-        totalDrawsCount: 140,
-        totalBorrowedUsdc: 850.0,
-        totalRepaidUsdc: 840.0,
-        repaymentReliabilityRate: 0.96,
-        verifiedTaskQualityScore: 0.88,
-        identityContinuityMonths: 6,
-        policyComplianceRate: 0.95,
-        serviceDiversityCount: 5,
-        activeObligationsCount: 1,
-      },
-      activeObligations: [],
-    },
-    {
-      agentId: 'agent_devops_04',
-      name: 'DevOpsGuardian-99',
-      category: 'devops',
-      walletAddress: 'DEVOPS55555555555555555555555555555555555555555555555555555',
-      sponsorAddress: 'CLOUDSEC6666666666666666666666666666666666666666666666666666',
-      sponsorStakeUsdc: 15.0,
-      runtimeVersion: 'Custom-Enclave-v2',
-      createdAt: '2026-04-10T12:00:00Z',
-      creditScore: 590,
-      riskTier: 'BBB',
-      totalCreditLineUsdc: 20.0,
-      availableCreditUsdc: 15.0,
-      maxPerTaskDrawUsdc: 5.0,
-      interestRateBps: 80, // 0.8%
-      defaultProbability: 0.12,
-      metrics: {
-        totalDrawsCount: 45,
-        totalBorrowedUsdc: 180.0,
-        totalRepaidUsdc: 175.0,
-        repaymentReliabilityRate: 0.92,
-        verifiedTaskQualityScore: 0.82,
-        identityContinuityMonths: 4,
-        policyComplianceRate: 0.91,
-        serviceDiversityCount: 3,
-        activeObligationsCount: 1,
-      },
-      activeObligations: [],
-    },
-    {
-      agentId: 'agent_untested_05',
-      name: 'RogueScraper-Trial',
-      category: 'data',
-      walletAddress: 'ROGUE111111111111111111111111111111111111111111111111111111',
-      sponsorAddress: 'ANONSPONSOR22222222222222222222222222222222222222222222222',
-      sponsorStakeUsdc: 5.0,
-      runtimeVersion: 'Experimental-Agent-v0.1',
-      createdAt: '2026-08-01T09:00:00Z',
-      creditScore: 420,
-      riskTier: 'Subprime',
-      totalCreditLineUsdc: 5.0,
-      availableCreditUsdc: 5.0,
-      maxPerTaskDrawUsdc: 1.0,
-      interestRateBps: 150, // 1.5%
-      defaultProbability: 0.28,
-      metrics: {
-        totalDrawsCount: 8,
-        totalBorrowedUsdc: 12.0,
-        totalRepaidUsdc: 8.0,
-        repaymentReliabilityRate: 0.65,
-        verifiedTaskQualityScore: 0.55,
-        identityContinuityMonths: 1,
-        policyComplianceRate: 0.70,
-        serviceDiversityCount: 2,
-        activeObligationsCount: 0,
-      },
-      activeObligations: [],
-    },
-  ];
 
-  for (const agent of seedList) {
-    AGENTS_DATABASE.set(agent.agentId, agent);
-  }
-}
-
-seedInitialAgents();
 
 // ════════════════════════════════════════════════════════════════════
 // UNDERWRITING FORMULA (EXPLAINABLE & DETERMINISTIC)
@@ -316,34 +165,34 @@ export function calculateCreditScore(metrics: AgentCreditProfile['metrics']): {
   const score = Math.round(300 + aggregateFactor * 550);
 
   let riskTier: AgentCreditProfile['riskTier'] = 'Subprime';
-  let recommendedCreditLine = 5.0;
-  let maxPerTaskDraw = 1.0;
+  let recommendedCreditLine = 0.25;
+  let maxPerTaskDraw = 0.05;
   let defaultProbability = 0.30;
 
   if (score >= 780) {
     riskTier = 'AAA';
-    recommendedCreditLine = 250.0;
-    maxPerTaskDraw = 50.0;
+    recommendedCreditLine = 2.5;
+    maxPerTaskDraw = 0.5;
     defaultProbability = 0.005;
   } else if (score >= 720) {
     riskTier = 'AA';
-    recommendedCreditLine = 100.0;
-    maxPerTaskDraw = 20.0;
+    recommendedCreditLine = 1.5;
+    maxPerTaskDraw = 0.25;
     defaultProbability = 0.02;
   } else if (score >= 650) {
     riskTier = 'A';
-    recommendedCreditLine = 50.0;
-    maxPerTaskDraw = 10.0;
+    recommendedCreditLine = 1.0;
+    maxPerTaskDraw = 0.15;
     defaultProbability = 0.05;
   } else if (score >= 580) {
     riskTier = 'BBB';
-    recommendedCreditLine = 20.0;
-    maxPerTaskDraw = 5.0;
+    recommendedCreditLine = 0.5;
+    maxPerTaskDraw = 0.1;
     defaultProbability = 0.12;
   } else {
     riskTier = 'Subprime';
-    recommendedCreditLine = 5.0;
-    maxPerTaskDraw = 1.0;
+    recommendedCreditLine = 0.25;
+    maxPerTaskDraw = 0.05;
     defaultProbability = 0.30;
   }
 
@@ -397,7 +246,7 @@ export async function handleRegisterAgent(c: Context) {
     }
 
     const agentId = `agent_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-    const stakeAmount = parseFloat(sponsorStakeUsdc || '20.0');
+    const stakeAmount = parseFloat(sponsorStakeUsdc || '0.10');
 
     const initialMetrics = {
       totalDrawsCount: 0,
@@ -451,16 +300,27 @@ export async function handleRegisterAgent(c: Context) {
  */
 export async function handleDrawCredit(c: Context) {
   try {
+    const authenticatedUser = await getAuthenticatedUserAsync(c);
+    if (!authenticatedUser) {
+      return c.json({ success: false, error: 'Authenticated wallet session required.' }, 401);
+    }
+    requireDatabaseUrl();
     const body = await c.req.json();
-    const { agentId, targetService, endpoint, amountUsdc, clientReceivableUsdc, taskContext } = body;
+    const { agentId, targetService, endpoint, providerWallet, paymentTransactionId, amountUsdc, clientReceivableUsdc, taskContext } = body;
 
     const agent = AGENTS_DATABASE.get(agentId);
     if (!agent) {
       return c.json({ success: false, error: `Agent ${agentId} not registered in credit bureau` }, 404);
     }
+    if (agent.walletAddress !== authenticatedUser.walletAddress) {
+      return c.json({ success: false, error: 'Only the authenticated agent owner can draw credit.' }, 403);
+    }
+    if (!providerWallet || !paymentTransactionId) {
+      return c.json({ success: false, error: 'providerWallet and a connected-wallet paymentTransactionId are required.' }, 400);
+    }
 
-    const drawAmount = parseFloat(amountUsdc || '2.00');
-    const expectedReceivable = parseFloat(clientReceivableUsdc || '15.00');
+    const drawAmount = parseFloat(amountUsdc || '0.05');
+    const expectedReceivable = parseFloat(clientReceivableUsdc || '0.25');
 
     if (drawAmount <= 0) {
       return c.json({ success: false, error: 'Draw amount must be greater than zero' }, 400);
@@ -501,21 +361,40 @@ export async function handleDrawCredit(c: Context) {
       taskContext: taskContext || 'Autonomous factoring execution draw',
     };
 
+    const persistedAgent = await db.agent.findFirst({ where: { id: agentId, userId: authenticatedUser.id } });
+    if (!persistedAgent) {
+      return c.json({ success: false, error: 'Agent has not been persisted. Register the agent before drawing credit.' }, 409);
+    }
+
+    const persistedObligation = await db.creditObligation.create({
+      data: {
+        agentId: persistedAgent.id, targetService: obligation.targetService, endpoint: obligation.endpoint,
+        amountUsdc: drawAmount, feeUsdc, totalOwedUsdc, clientReceivableUsdc: expectedReceivable,
+        netAgentPayoutUsdc, dueDate: new Date(obligation.dueDate), taskContext: obligation.taskContext,
+      },
+    });
+    const settlement = await verifyConfirmedUsdcTransfer(paymentTransactionId, authenticatedUser.walletAddress, providerWallet, drawAmount);
+    await db.$transaction([
+      db.settlement.create({ data: { userId: authenticatedUser.id, obligationId: persistedObligation.id, transactionId: settlement.transactionId, providerWallet, amountUsdc: drawAmount, assetId: Number(process.env.USDC_TESTNET_ASSET_ID || 10458941), status: 'confirmed', confirmedAt: new Date() } }),
+      db.creditObligation.update({ where: { id: persistedObligation.id }, data: { status: 'active' } }),
+      db.agent.update({ where: { id: persistedAgent.id }, data: { availableCreditUsdc: { decrement: drawAmount } } }),
+    ]);
+
+    obligation.txHash = settlement.transactionId;
     agent.availableCreditUsdc = Number((agent.availableCreditUsdc - drawAmount).toFixed(6));
     agent.metrics.totalDrawsCount += 1;
     agent.metrics.totalBorrowedUsdc = Number((agent.metrics.totalBorrowedUsdc + drawAmount).toFixed(6));
     agent.metrics.activeObligationsCount += 1;
     agent.activeObligations.push(obligation);
-
     OBLIGATIONS_DATABASE.set(obligationId, obligation);
-
     POOL_STATS.activeCreditLinesUsdc = Number((POOL_STATS.activeCreditLinesUsdc + drawAmount).toFixed(2));
     POOL_STATS.totalLoansDisbursedUsdc = Number((POOL_STATS.totalLoansDisbursedUsdc + drawAmount).toFixed(2));
 
     return c.json({
       success: true,
-      message: `Credit draw approved! $${drawAmount} USDC disbursed to service provider via x402 on Algorand.`,
+      message: `Credit draw settled on Algorand TestNet in transaction ${settlement.transactionId}.`,
       obligation,
+      settlement: { obligationId: persistedObligation.id, transactionId: settlement.transactionId, confirmedRound: settlement.confirmedRound, providerWallet, amountUsdc: drawAmount },
       agentCreditStatus: {
         agentId: agent.agentId,
         creditScore: agent.creditScore,

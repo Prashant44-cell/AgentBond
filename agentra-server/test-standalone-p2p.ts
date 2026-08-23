@@ -10,9 +10,9 @@ import {
   handleSendChatMessage,
   handleGetChatHistory,
   calculateBorrowerTrustScore,
-  calculateMaxUncollateralizedCredit,
-  generateCanonicalContractHash,
-} from './handlers/p2p-marketplace.js';
+  calculateExposureCapUsdc,
+  generateCanonicalHash,
+} from './handlers/p2p-marketplace';
 
 const testApp = new Hono();
 
@@ -39,10 +39,10 @@ async function runTestSuite() {
   });
   console.log('✅ Math Test 1: Borrower Score (100% repayment, 180d age) ->', score);
 
-  const cap = calculateMaxUncollateralizedCredit(745);
+  const cap = calculateExposureCapUsdc(745, 0);
   console.log('✅ Math Test 2: Exposure Cap for Score 745 -> $', cap);
 
-  const hash = generateCanonicalContractHash(
+  const hash = generateCanonicalHash(
     {
       principalUsdc: 25,
       interestRateBps: 400,
@@ -54,11 +54,7 @@ async function runTestSuite() {
       dueDate: '2026-08-23T00:00:00Z',
       gracePeriodEndDate: '2026-08-25T00:00:00Z',
       defaultRule: 'REPUTATION_PENALTY',
-      privacyLevel: 'COUNTERPARTY_ONLY',
-    },
-    {
-      borrowerWallet: '0xBorrowerWallet123',
-      lenderWallet: '0xLenderWallet456',
+      privacyLevel: 'PUBLIC',
     }
   );
   console.log('✅ Math Test 3: Canonical Contract SHA-256 Hash ->', hash);

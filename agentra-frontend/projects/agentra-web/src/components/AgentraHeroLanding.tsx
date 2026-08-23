@@ -1,6 +1,6 @@
 import React from 'react'
 
-interface AgentraHeroLandingProps {
+interface AgentBondHeroLandingProps {
   onLaunchSuite: () => void
   onOpenProfile: () => void
   onOpenDiscovery: () => void
@@ -8,7 +8,7 @@ interface AgentraHeroLandingProps {
   activeAddress: string | null
 }
 
-export const AgentraHeroLanding: React.FC<AgentraHeroLandingProps> = ({
+export const AgentBondHeroLanding: React.FC<AgentBondHeroLandingProps> = ({
   onLaunchSuite,
   onOpenProfile,
   onOpenDiscovery,
@@ -97,4 +97,4 @@ export const AgentraHeroLanding: React.FC<AgentraHeroLandingProps> = ({
   )
 }
 
-export default AgentraHeroLanding
+export default AgentBondHeroLanding

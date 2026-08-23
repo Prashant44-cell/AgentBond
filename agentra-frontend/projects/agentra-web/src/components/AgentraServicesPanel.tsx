@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { fetchAgentraServices, AgentraCatalogResponse } from '../utils/agentraApi'
+import { fetchAgentBondServices, AgentBondCatalogResponse } from '../utils/agentraApi'
 
-export const AgentraServicesPanel: React.FC = () => {
-  const [catalog, setCatalog] = useState<AgentraCatalogResponse | null>(null)
+export const AgentBondServicesPanel: React.FC = () => {
+  const [catalog, setCatalog] = useState<AgentBondCatalogResponse | null>(null)
   const [codeTab, setCodeTab] = useState<'python' | 'ts' | 'curl'>('python')
   const [copied, setCopied] = useState<boolean>(false)
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
 
   useEffect(() => {
-    fetchAgentraServices(apiBaseUrl)
+    fetchAgentBondServices(apiBaseUrl)
       .then((data) => {
         setCatalog(data)
       })
@@ -18,7 +18,7 @@ export const AgentraServicesPanel: React.FC = () => {
       })
   }, [apiBaseUrl])
 
-  const pythonSnippet = `# How an Autonomous AI Agent calls Agentra via x402
+  const pythonSnippet = `# How an Autonomous AI Agent calls AgentBond via x402
 import requests
 from x402_avm import create_x402_client
 
@@ -50,8 +50,8 @@ else:
   const tsSnippet = `// Autonomous Agent Tool Integration (TypeScript)
 import { createX402Fetch } from '@x402-avm/fetch';
 
-// Agentra Pre-Action Verification Tool
-export async function verifyWithAgentra(task: string, content: string) {
+// AgentBond Pre-Action Verification Tool
+export async function verifyWithAgentBond(task: string, content: string) {
   const x402Fetch = await createX402Fetch(agentWalletSigner);
   
   // Sends request, negotiates 402 challenge, signs 0.01 USDC on Algorand
@@ -111,7 +111,7 @@ curl -X POST ${apiBaseUrl}/verify-task \\
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-white font-bold text-sm">
-                    {catalog?.services[0]?.name || 'Agentra Verify'}
+                    {catalog?.services[0]?.name || 'AgentBond Verify'}
                   </span>
                   <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30">
                     Live
@@ -228,4 +228,4 @@ curl -X POST ${apiBaseUrl}/verify-task \\
   )
 }
 
-export default AgentraServicesPanel
+export default AgentBondServicesPanel

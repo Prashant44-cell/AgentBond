@@ -1,8 +1,8 @@
 {
   "name": "agentra-web-app",
   "version": "2.0.0",
-  "description": "Agentra: Web & Multi-Tool Verification Suite for AI Agents",
-  "author": "Agentra Labs",
+  "description": "AgentBond: Web & Multi-Tool Verification Suite for AI Agents",
+  "author": "AgentBond Labs",
   "private": true,
   "type": "module",
   "engines": {

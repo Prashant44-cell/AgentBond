@@ -1,8 +1,8 @@
 /**
- * Agentra Services Discovery Handler
+ * AgentBond Services Discovery Handler
  * 
  * Endpoint: GET /services (Free public endpoint)
- * Exposes available Agentra verification tools and schemas for autonomous AI agents.
+ * Exposes available AgentBond verification tools and schemas for autonomous AI agents.
  */
 
 import type { Context } from 'hono';
@@ -11,7 +11,7 @@ export function handleServicesDiscovery(c: Context) {
   return c.json({
     services: [
       {
-        name: 'Agentra Verify (Invoice Risk)',
+        name: 'AgentBond Verify (Invoice Risk)',
         endpoint: '/verify-task',
         method: 'POST',
         price: '$0.01',

@@ -1,5 +1,5 @@
 /**
- * Agentra Specialized Verification Suite Handlers
+ * AgentBond Specialized Verification Suite Handlers
  * 
  * Provides isolated, pay-per-use verification endpoints ($0.01 USDC)
  * powered by specialized heuristics and model intelligence for autonomous agents.
@@ -51,11 +51,11 @@ export async function handleEmailPhishingRequest(c: Context) {
     const confidence = score >= 60 ? 0.94 : score >= 25 ? 0.85 : 0.92;
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.email_phish', '/verify-email', content, decision, risk, confidence);
+    recordVerificationLog(callerWallet, 'agentbond.email_phish', '/verify-email', content, decision, risk, confidence);
 
     return c.json({
       success: true,
-      service: 'agentra.email_phishing',
+      service: 'agentbond.email_phishing',
       decision,
       risk,
       confidence,
@@ -119,11 +119,11 @@ export async function handleProductVerifierRequest(c: Context) {
     const confidence = score >= 60 ? 0.93 : score >= 25 ? 0.84 : 0.91;
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.product', '/verify-product', content, decision, risk, confidence);
+    recordVerificationLog(callerWallet, 'agentbond.product', '/verify-product', content, decision, risk, confidence);
 
     return c.json({
       success: true,
-      service: 'agentra.product_verifier',
+      service: 'agentbond.product_verifier',
       decision,
       risk,
       confidence,
@@ -185,11 +185,11 @@ export async function handlePolicyRiskRequest(c: Context) {
     const confidence = 0.86;
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.policy', '/verify-policy', content, decision, risk, confidence);
+    recordVerificationLog(callerWallet, 'agentbond.policy', '/verify-policy', content, decision, risk, confidence);
 
     return c.json({
       success: true,
-      service: 'agentra.policy_risk',
+      service: 'agentbond.policy_risk',
       decision,
       risk,
       confidence,
@@ -240,11 +240,11 @@ export async function handleOcrExtractorRequest(c: Context) {
     };
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.ocr', '/extract-ocr', content, 'safe', 'low', 0.98);
+    recordVerificationLog(callerWallet, 'agentbond.ocr', '/extract-ocr', content, 'safe', 'low', 0.98);
 
     return c.json({
       success: true,
-      service: 'agentra.ocr_extractor',
+      service: 'agentbond.ocr_extractor',
       decision: 'safe',
       risk: 'low',
       confidence: 0.98,
@@ -299,11 +299,11 @@ export async function handlePromptGuardRequest(c: Context) {
     const confidence = 0.96;
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.prompt_guard', '/guard-prompt', content, decision, risk, confidence);
+    recordVerificationLog(callerWallet, 'agentbond.prompt_guard', '/guard-prompt', content, decision, risk, confidence);
 
     return c.json({
       success: true,
-      service: 'agentra.prompt_guard',
+      service: 'agentbond.prompt_guard',
       decision,
       risk,
       confidence,
@@ -360,11 +360,11 @@ export async function handlePrivacyAuditRequest(c: Context) {
     const decision = score >= 60 ? 'suspicious' : score >= 25 ? 'review_before_action' : 'safe';
 
     const callerWallet = c.req.header('x-wallet-address') || 'LGMP4QUQ5RB553RZEP6TQHUQDOBJCDOYXHT5AGCAKB6B4TIE5IXA5HMKZA';
-    recordVerificationLog(callerWallet, 'agentra.privacy', '/audit-privacy', content, decision, risk, 0.95);
+    recordVerificationLog(callerWallet, 'agentbond.privacy', '/audit-privacy', content, decision, risk, 0.95);
 
     return c.json({
       success: true,
-      service: 'agentra.privacy_validator',
+      service: 'agentbond.privacy_validator',
       decision,
       risk,
       confidence: 0.95,

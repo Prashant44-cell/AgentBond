@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  walletAddress     String   @unique
+  username          String?  @unique
+  displayName       String?
+  role              String   @default("individual")
+  reputationScore   Int      @default(600)
+  defaultCount      Int      @default(0)
+  kycTier           Int      @default(0)
+  totalLoansSettled Int      @default(0)
+  borrowLimit       Decimal  @default(0) @db.Decimal(18, 6)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastLoginAt       DateTime @default(now())
+  sessions          Session[]
+  nonces            LoginNonce[]
+  agents            Agent[]
+  creditRequests    CreditRequest[] @relation("BorrowerRequests")
+  lenderOffers      LoanOffer[]     @relation("LenderOffers")
+  borrowerContracts LoanContract[]  @relation("BorrowerContracts")
+  lenderContracts   LoanContract[]  @relation("LenderContracts")
+  repayments        Repayment[]
+  messagesSent      ChatMessage[]   @relation("MessagesSent")
+  messagesReceived  ChatMessage[]   @relation("MessagesReceived")
+  settlements       Settlement[]
+}
+
+model LoginNonce {
+  id              String   @id @default(cuid())
+  walletAddress   String
+  nonceHash       String   @unique
+  messageTemplate String
+  expiresAt       DateTime
+  usedAt          DateTime?
+  createdAt       DateTime @default(now())
+  user            User?    @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  @@index([walletAddress, expiresAt])
+}
+
+model Session {
+  id               String   @id @default(cuid())
+  userId           String
+  sessionTokenHash String   @unique
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  revokedAt        DateTime?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, expiresAt])
+}
+
+model Agent {
+  id                  String   @id @default(cuid())
+  userId              String
+  name                String
+  category            String
+  sponsorAddress      String?
+  sponsorStakeUsdc    Decimal  @default(0) @db.Decimal(18, 6)
+  runtimeVersion      String?
+  creditScore         Int      @default(600)
+  riskTier            String   @default("BBB")
+  totalCreditLineUsdc Decimal  @default(0) @db.Decimal(18, 6)
+  availableCreditUsdc Decimal  @default(0) @db.Decimal(18, 6)
+  maxPerTaskDrawUsdc  Decimal  @default(0) @db.Decimal(18, 6)
+  interestRateBps     Int      @default(0)
+  defaultProbability  Decimal  @default(0) @db.Decimal(8, 6)
+  metrics             Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  obligations         CreditObligation[]
+  @@index([userId])
+}
+
+model CreditObligation {
+  id                    String   @id @default(cuid())
+  agentId               String
+  targetService         String
+  endpoint              String
+  amountUsdc            Decimal  @db.Decimal(18, 6)
+  feeUsdc               Decimal  @db.Decimal(18, 6)
+  totalOwedUsdc         Decimal  @db.Decimal(18, 6)
+  clientReceivableUsdc  Decimal  @db.Decimal(18, 6)
+  netAgentPayoutUsdc    Decimal  @db.Decimal(18, 6)
+  dueDate               DateTime
+  status                String   @default("pending_settlement")
+  taskContext           String?
+  taskOutcome           Json?
+  repaidAt              DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  agent                 Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  settlements           Settlement[]
+  @@index([agentId, status])
+}
+
+model Settlement {
+  id              String   @id @default(cuid())
+  userId          String
+  obligationId    String
+  transactionId   String?  @unique
+  providerWallet  String
+  amountUsdc      Decimal  @db.Decimal(18, 6)
+  assetId         Int
+  status          String   @default("pending")
+  confirmedAt     DateTime?
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  obligation      CreditObligation @relation(fields: [obligationId], references: [id], onDelete: Cascade)
+  @@index([userId, status])
+}
+
+model CreditRequest {
+  id                  String   @id @default(cuid())
+  borrowerId          String
+  requestedPrincipal  Decimal  @db.Decimal(18, 6)
+  maxInterestRateBps  Int
+  maxDurationSeconds  Int
+  purposeCategory     String
+  serviceEndpoint     String?
+  guarantorRequired   Boolean  @default(false)
+  collateralOffered   Decimal  @default(0) @db.Decimal(18, 6)
+  status              String   @default("OPEN")
+  expiresAt           DateTime
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  borrower            User     @relation("BorrowerRequests", fields: [borrowerId], references: [id], onDelete: Cascade)
+  offers              LoanOffer[]
+  contracts           LoanContract[]
+  @@index([status, expiresAt])
+}
+
+model LoanOffer {
+  id                  String   @id @default(cuid())
+  requestId           String
+  lenderId            String
+  offeredPrincipal    Decimal  @db.Decimal(18, 6)
+  interestRateBps     Int
+  durationSeconds     Int
+  gracePeriodSeconds  Int
+  collateralRequired  Decimal  @default(0) @db.Decimal(18, 6)
+  guarantorRequired   Boolean  @default(false)
+  escrowRequired      Boolean  @default(false)
+  status              String   @default("PENDING")
+  createdAt           DateTime @default(now())
+  request             CreditRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  lender              User     @relation("LenderOffers", fields: [lenderId], references: [id], onDelete: Cascade)
+  contract            LoanContract?
+  @@index([requestId, lenderId])
+}
+
+model LoanContract {
+  id                  String   @id @default(cuid())
+  requestId           String
+  offerId             String   @unique
+  borrowerId          String
+  lenderId            String
+  canonicalHash       String
+  terms               Json
+  state               String   @default("AWAITING_BORROWER_SIGNATURE")
+  borrowerSignature   String?
+  lenderSignature     String?
+  fundingTransactionId String? @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  request             CreditRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  offer               LoanOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  borrower            User     @relation("BorrowerContracts", fields: [borrowerId], references: [id], onDelete: Cascade)
+  lender              User     @relation("LenderContracts", fields: [lenderId], references: [id], onDelete: Cascade)
+  repayments          Repayment[]
+  messages            ChatMessage[]
+  @@index([borrowerId, lenderId])
+}
+
+model Repayment {
+  id               String   @id @default(cuid())
+  contractId       String
+  payerId          String
+  amountUsdc       Decimal  @db.Decimal(18, 6)
+  transactionId    String   @unique
+  remainingBalance Decimal  @db.Decimal(18, 6)
+  createdAt        DateTime @default(now())
+  contract         LoanContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  payer            User     @relation(fields: [payerId], references: [id], onDelete: Cascade)
+  @@index([contractId, createdAt])
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  contractId  String
+  senderId    String
+  recipientId String
+  content     String
+  createdAt   DateTime @default(now())
+  contract    LoanContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  sender      User @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User @relation("MessagesReceived", fields: [recipientId], references: [id], onDelete: Cascade)
+  @@index([contractId, createdAt])
+}

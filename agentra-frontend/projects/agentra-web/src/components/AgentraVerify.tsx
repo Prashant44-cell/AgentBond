@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useWallet } from '@txnlab/use-wallet-react'
 import { verifyAgentTask, evaluateTaskLocally, VerifyTaskResponse } from '../utils/agentraApi'
 
-interface AgentraVerifyProps {
+interface AgentBondVerifyProps {
   onOpenWalletModal: () => void
 }
 
@@ -33,7 +33,7 @@ const PRESETS = [
   },
 ]
 
-export const AgentraVerify: React.FC<AgentraVerifyProps> = ({ onOpenWalletModal }) => {
+export const AgentBondVerify: React.FC<AgentBondVerifyProps> = ({ onOpenWalletModal }) => {
   const { activeAddress, signTransactions } = useWallet()
 
   const [task, setTask] = useState<string>(PRESETS[0].task)
@@ -100,12 +100,12 @@ export const AgentraVerify: React.FC<AgentraVerifyProps> = ({ onOpenWalletModal 
       setPaymentStep('3. Payment verified & inference analyzed!')
       setResult(data)
     } catch (err: any) {
-      console.error('Agentra verification error:', err)
+      console.error('AgentBond verification error:', err)
       const message = err?.message || 'Verification request failed'
       if (message.includes('User rejected') || message.includes('cancelled') || message.includes('blocked')) {
         setError('Transaction was cancelled in the wallet. Payment was not completed.')
       } else if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
-        setError('Cannot reach Agentra server at http://localhost:4021. Ensure the backend server is running.')
+        setError('Cannot reach AgentBond server at http://localhost:4021. Ensure the backend server is running.')
       } else {
         setError(message)
       }
@@ -151,7 +151,7 @@ export const AgentraVerify: React.FC<AgentraVerifyProps> = ({ onOpenWalletModal 
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-white font-bold tracking-wide text-sm sm:text-base">Agentra Verify Layer</span>
+              <span className="text-white font-bold tracking-wide text-sm sm:text-base">AgentBond Verify Layer</span>
               <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
                 x402 Protocol
               </span>
@@ -483,4 +483,4 @@ export const AgentraVerify: React.FC<AgentraVerifyProps> = ({ onOpenWalletModal 
   )
 }
 
-export default AgentraVerify
+export default AgentBondVerify

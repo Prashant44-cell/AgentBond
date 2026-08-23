@@ -1,14 +1,19 @@
 /**
- * Agentra Wallet-First Authentication & Profile Client (SIWA)
+ * AgentBond Wallet-First Authentication & Profile Client (SIWA)
  */
 
 export interface AuthUserProfile {
   id: string
+  username?: string | null
   walletAddress: string
   role: 'individual' | 'developer' | 'admin'
+  reputationScore?: number
+  defaultCount?: number
+  isBlocked?: boolean
   createdAt: string
+  updatedAt?: string
   lastLoginAt: string
-  stats: {
+  stats?: {
     totalVerifications: number
     totalSpentUsdc: number
     threatsBlocked: number
@@ -19,6 +24,7 @@ export interface AuthUserProfile {
 
 export interface UserAnalyticsData {
   walletAddress: string
+  username?: string | null
   decisionsCount: {
     safe: number
     review_before_action: number
@@ -69,6 +75,26 @@ export function clearStoredSessionToken() {
 }
 
 /**
+ * Username validation helper for frontend forms
+ */
+export function validateUsernameInput(username: string): { valid: boolean; error?: string } {
+  if (!username || !username.trim()) {
+    return { valid: false, error: 'Username cannot be empty.' }
+  }
+  const clean = username.trim().toLowerCase()
+  if (clean.length < 3) {
+    return { valid: false, error: 'Username must be at least 3 characters.' }
+  }
+  if (clean.length > 20) {
+    return { valid: false, error: 'Username must not exceed 20 characters.' }
+  }
+  if (!/^[a-z0-9_-]+$/.test(clean)) {
+    return { valid: false, error: 'Use only letters, numbers, underscores (_), and hyphens (-).' }
+  }
+  return { valid: true }
+}
+
+/**
  * Step 1: Request single-use login nonce from backend
  */
 export async function requestLoginNonce(
@@ -99,7 +125,7 @@ export async function signInWithWallet(
     signData?: (data: string, metadata: { scope: number; encoding: string }) => Promise<{ signature: Uint8Array }>
   },
   apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
-): Promise<{ sessionToken: string; user: AuthUserProfile }> {
+): Promise<{ sessionToken: string; hasUsername: boolean; user: AuthUserProfile }> {
   const { address } = walletSigner
 
   // 1. Get nonce from server
@@ -133,6 +159,40 @@ export async function signInWithWallet(
   return data
 }
 
+/**
+ * Step 3: Claim permanent globally unique username
+ */
+export async function claimUsername(
+  username: string,
+  apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
+): Promise<AuthUserProfile> {
+  const token = getStoredSessionToken()
+  if (!token) {
+    throw new Error('Active wallet session required to claim username')
+  }
+
+  const validation = validateUsernameInput(username)
+  if (!validation.valid) {
+    throw new Error(validation.error)
+  }
+
+  const res = await fetch(`${apiBaseUrl}/auth/username`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ username: username.trim().toLowerCase() }),
+  })
+
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to claim username')
+  }
+
+  return data.user
+}
+
 export async function logoutFromWallet(
   apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
 ) {
@@ -152,7 +212,7 @@ export async function logoutFromWallet(
 export async function fetchProfileData(
   walletAddress: string,
   apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4021'
-): Promise<{ user: AuthUserProfile; receipts: VerificationReceipt[] }> {
+): Promise<{ hasUsername?: boolean; user: AuthUserProfile; receipts: VerificationReceipt[] }> {
   const token = getStoredSessionToken()
   const headers: Record<string, string> = {}
   if (token) {

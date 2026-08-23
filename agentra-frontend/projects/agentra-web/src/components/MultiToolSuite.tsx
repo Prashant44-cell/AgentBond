@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { createAgentraX402Fetch, AgentraVerificationReport } from '../utils/agentraApi'
+import { createAgentBondX402Fetch, AgentBondVerificationReport } from '../utils/agentraApi'
 import Weather from './Weather'
 import MemeGenerator from './MemeGenerator'
 
@@ -64,7 +64,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
   const [secondaryInput, setSecondaryInput] = useState<string>('INV-2026-991')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [statusMessage, setStatusMessage] = useState<string>('')
-  const [report, setReport] = useState<AgentraVerificationReport | null>(null)
+  const [report, setReport] = useState<AgentBondVerificationReport | null>(null)
   const [activeTab, setActiveTab] = useState<'visual' | 'json'>('visual')
   const [copied, setCopied] = useState<boolean>(false)
 
@@ -477,7 +477,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
 
         setReport({
           success: true,
-          service: `agentra.${selectedTool}`,
+          service: `agentbond.${selectedTool}`,
           decision,
           risk,
           confidence: score >= 60 ? 0.95 : 0.98,
@@ -504,7 +504,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
 
         setStatusMessage(`Requesting x402 verification challenge from ${currentTool.endpoint}...`)
 
-        const agentraFetch = await createAgentraX402Fetch(
+        const agentraFetch = await createAgentBondX402Fetch(
           walletSigner || { address: activeAddress }
         )
 
@@ -528,7 +528,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
         })
 
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: Failed to verify with Agentra enclave`)
+          throw new Error(`HTTP ${response.status}: Failed to verify with AgentBond enclave`)
         }
 
         const data = await response.json()
@@ -539,14 +539,14 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
       console.error('Verification evaluation error:', err)
       setReport({
         success: false,
-        service: `agentra.${selectedTool}`,
+        service: `agentbond.${selectedTool}`,
         decision: 'review_before_action',
         risk: 'medium',
         confidence: 0.75,
         summary: `Verification simulation active: ${(err as Error).message}`,
         evidence: ['Heuristic fallback evaluation applied.'],
         recommendedAction: 'Verify connection or run Fast Dry-Run test.',
-        modelUsed: 'Agentra Heuristic Core (Fallback)',
+        modelUsed: 'AgentBond Heuristic Core (Fallback)',
         paidVia: 'Fallback Mode',
         amount: parseFloat(currentTool.price.replace('$', '')),
         currency: 'USDC',
@@ -769,7 +769,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
                         <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                           <div className="flex items-center space-x-2">
                             <span className="text-indigo-400 font-bold text-xs">📄 LIVE INVOICE DOCUMENT SLIP</span>
-                            <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">STATUS: PENDING AGENTRA CHECK</span>
+                            <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">STATUS: PENDING AGENTBOND CHECK</span>
                           </div>
                           <span className="text-xs text-slate-400">{new Date().toLocaleDateString()}</span>
                         </div>
