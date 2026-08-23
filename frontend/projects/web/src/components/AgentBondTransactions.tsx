@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { VerificationReceipt, fetchProfileData } from '../utils/agentraAuth'
+import { VerificationReceipt, fetchProfileData } from '../utils/auth'
 import { Activity, ArrowUpRight, WalletCards } from 'lucide-react'
 
 interface AgentBondTransactionsProps {

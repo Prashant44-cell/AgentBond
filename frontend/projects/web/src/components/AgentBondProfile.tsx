@@ -6,7 +6,7 @@ import {
   fetchProfileData,
   getStoredSessionToken,
   logoutFromWallet,
-} from '../utils/agentraAuth'
+} from '../utils/auth'
 
 interface AgentBondProfileProps {
   activeAddress: string | null

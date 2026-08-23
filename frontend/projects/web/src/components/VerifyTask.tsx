@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useWallet } from '@txnlab/use-wallet-react'
-import { verifyAgentTask, evaluateTaskLocally, VerifyTaskResponse } from '../utils/agentraApi'
+import { verifyAgentTask, evaluateTaskLocally, VerifyTaskResponse } from '../utils/api'
 
 interface AgentBondVerifyProps {
   onOpenWalletModal: () => void

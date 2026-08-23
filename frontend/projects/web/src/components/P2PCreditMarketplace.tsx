@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { getStoredSessionToken } from '../utils/agentraAuth'
+import { getStoredSessionToken } from '../utils/auth'
 
 export interface CreditRequest {
   requestId: string

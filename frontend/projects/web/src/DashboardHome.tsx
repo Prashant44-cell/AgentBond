@@ -16,7 +16,7 @@ import {
   clearStoredSessionToken,
   fetchProfileData,
   AuthUserProfile,
-} from './utils/agentraAuth'
+} from './utils/auth'
 
 export type AgentBondTab =
   | 'overview'

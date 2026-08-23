@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { createAgentBondX402Fetch, AgentBondVerificationReport } from '../utils/agentraApi'
+import { createAgentBondX402Fetch, AgentBondVerificationReport } from '../utils/api'
 import Weather from './Weather'
 import MemeGenerator from './MemeGenerator'
 
@@ -504,7 +504,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
 
         setStatusMessage(`Requesting x402 verification challenge from ${currentTool.endpoint}...`)
 
-        const agentraFetch = await createAgentBondX402Fetch(
+        const agentBondFetch = await createAgentBondX402Fetch(
           walletSigner || { address: activeAddress }
         )
 
@@ -521,7 +521,7 @@ export const MultiToolSuite: React.FC<MultiToolSuiteProps> = ({
                 content: `${secondaryInput} ${inputText}`.trim(),
               }
 
-        const response = await agentraFetch(`${apiBaseUrl}${currentTool.endpoint}`, {
+        const response = await agentBondFetch(`${apiBaseUrl}${currentTool.endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
