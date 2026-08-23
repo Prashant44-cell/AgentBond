@@ -321,12 +321,6 @@ The API returns and stores the confirmed transaction ID with the obligation, pro
 - **License:** MIT
 - **Evaluation network:** Algorand TestNet
 
-Before final submission, add individual contributor names, contact handles, live demo URL, hackathon submission URL, and a verified TestNet transaction link.
-
-## Contact and submission notes
-
-The final submission should include the live demo URL, hackathon submission URL, verified Algorand TestNet settlement link, team contact, and any demo wallet instructions.
-
 ## License
 
 Distributed under the MIT License.
