@@ -315,8 +315,8 @@ The API returns and stores the confirmed transaction ID with the obligation, pro
 ## Developer and team information
 
 - **Project:** AgentBond
-- **Team:** AgentBond Labs
-- **Developer:** AgentBond Labs / project contributors
+- **Team:** LotUs
+- **Developer:** Prashant gupta
 - **Focus:** Autonomous-agent identity, outcome-backed credit, P2P stablecoin lending, and x402 payments on Algorand
 - **License:** MIT
 - **Evaluation network:** Algorand TestNet
